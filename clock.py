@@ -16,6 +16,7 @@ class Clock:
         hand_length = DEFAULT_HAND_LENGTH,
         hand_color=DEFAULT_COLOR,
         hand_thickness=DEFAULT_THICKNESS,
+        spin_clockwise=False,
     ):
         self.radius = radius
         self.center = center
@@ -32,10 +33,11 @@ class Clock:
             "-" :   [math.radians(90),  math.radians(270)],
             "┌" :  [math.radians(90),  math.radians(180)],
             "┐" :  [math.radians(180), math.radians(270)],
-            "┘" :  [math.radians(270), math.radians(0)],
+            "┘" :  [math.radians(270), math.radians(360)],
             "└" :  [math.radians(0),   math.radians(90)],
             "/" : [math.radians(45),  math.radians(45)],
-        }
+        } # make sure that angles are in accending order for proper interpolation
+        self.spin_clockwise = spin_clockwise
 
     def _draw_shapes(self, screen, hand_angles):
         def _get_rect_coords(angle, center, length, half_width):
@@ -61,15 +63,39 @@ class Clock:
                 _get_rect_coords(angle, self.center, self.hand_length, self.hand_thickness / 2),
             )
 
+    def _intrapolate_closest_angle(self, start_angle, end_angle, transition_ratio):
+        intrapolated_angles = []
+        for prev_angle, next_angle in zip(start_angle, end_angle):
+            prev_angle %= 2 * math.pi
+            next_angle %= 2 * math.pi
+            intrapolated_angles.append(prev_angle + (next_angle - prev_angle) * transition_ratio)
+        
+        return intrapolated_angles
+    
+    def _intrapolate_clockwise_angle(self, start_angle, end_angle, transition_ratio):
+        end_angles = [angle + 2 * math.pi if angle < start_angle[i] else angle for i, angle in enumerate(end_angle)]
+        end_angles.sort()
+
+        intrapolated_angles = [
+            start_angle + (end_angle - start_angle) * transition_ratio
+            for start_angle, end_angle in zip(start_angle, end_angles)
+        ]
+
+        return intrapolated_angles
+
     def draw(self, screen, transition_ratio, start_state, end_state):
         hand_angles = [
             self.state_angle_mapping[start_state],
             self.state_angle_mapping[end_state],
         ]
-        transition_ratio = max(0.0, min(1.0, transition_ratio))
 
-        intrapolated_angles = [prev_angle + (next_angle - prev_angle) * transition_ratio for prev_angle, next_angle in zip(hand_angles[0], hand_angles[1])]
+        intrapolation_fn = self._intrapolate_clockwise_angle if self.spin_clockwise else self._intrapolate_closest_angle
 
+        intrapolated_angles = intrapolation_fn(
+            hand_angles[0],
+            hand_angles[1],
+            transition_ratio,
+        )
         self._draw_shapes(screen, intrapolated_angles)
 
     

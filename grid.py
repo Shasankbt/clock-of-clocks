@@ -6,7 +6,7 @@ NUM_COLS = 4
 DEFAULT_CLOCK_RADIUS = 20
 
 class Grid:
-    def __init__(self, center, clock_radius = DEFAULT_CLOCK_RADIUS):
+    def __init__(self, center, clock_radius = DEFAULT_CLOCK_RADIUS, spin_clockwise=False):
         self.clocks = []
 
         for row in range(NUM_ROWS):
@@ -21,7 +21,8 @@ class Grid:
                         center=clock_center,
                         radius=clock_radius,
                         circle_color=(100, 100, 100),
-                        hand_length=clock_radius-1
+                        hand_length=clock_radius-1,
+                        spin_clockwise=spin_clockwise,
                     )
                 )
             self.clocks.append(row_clocks)

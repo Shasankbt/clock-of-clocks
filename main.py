@@ -30,13 +30,13 @@ grid_centers = [
     (150, 200),
     (320, 200),
     (510, 200),
-    (660, 200),
-    (850, 200),
-    (1020, 200),
+    (680, 200),
+    (870, 200),
+    (1040, 200),
 ]
 
 grids = [
-    Grid(center=center, clock_radius=20)
+    Grid(center=center, clock_radius=20, spin_clockwise=False)
     for center in grid_centers
 ]
 
@@ -46,6 +46,8 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     now = time.time() + (5 * 3600) + (30 * 60)
+
+    now /= 1.0
     
     start_time = now - transition_duration_ms/2000.0
     end_time = now + transition_duration_ms/2000.0
