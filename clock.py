@@ -36,6 +36,7 @@ class Clock:
             "┘" :  [math.radians(270), math.radians(360)],
             "└" :  [math.radians(0),   math.radians(90)],
             "/" : [math.radians(45),  math.radians(45)],
+            "\\" : [math.radians(225), math.radians(225)],
         } # make sure that angles are in accending order for proper interpolation
         self.spin_clockwise = spin_clockwise
 
