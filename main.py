@@ -70,7 +70,8 @@ class Clock_of_Clocks:
 
     def _smooth_transition(self, t):
         t = max(0.0, min(1.0, t))
-        return t * t * (3 - 2 * t)
+        # return t * t * (3 - 2 * t)
+        return t ** (1/2)
 
     def update_screen(self):
         now = time.time() + (5 * 3600) + (30 * 60)
@@ -95,7 +96,7 @@ class Clock_of_Clocks:
         end_digits = end_hour_digits + end_minute_digits + end_seconds_digits
 
 
-        screen.fill((30, 30, 30))
+        screen.fill((0, 0, 0))
         for grid, start_digit, end_digit in zip(self.grids, start_digits, end_digits):
             grid.draw(screen, transition_ratio, start_digit, end_digit)
 
